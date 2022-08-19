@@ -1,14 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const passport = require('passport');
 
-const { auth } = require("../middleware/auth");
+const User = require("../models/User");
+const keys = require('../config/key');
 
 //=================================
 //             User
 //=================================
 
-router.get("/auth", auth, (req, res) => {
+router.get("/auth", passport.authenticate('jwt', { session: false }), (req, res) => {
   res.status(200).json({
     _id: req.user._id,
     isAdmin: req.user.role === 0 ? false : true,
@@ -51,19 +53,27 @@ router.post("/login", (req, res) => {
       if (!isMatch)
         return res.json({ loginSuccess: false, message: "Wrong password" });
 
-      user.generateToken((err, user) => {
-        if (err) return res.status(400).send(err);
-        res.cookie("w_authExp", user.tokenExp);
-        res.cookie("w_auth", user.token).status(200).json({
-          loginSuccess: true,
-          userId: user._id,
-        });
-      });
+      // User Matched
+      const payload = { id: user._id, name: user.name }; // Create JWT Payload
+
+      // Sign Token
+      jwt.sign(
+        payload,
+        keys.secretOrKey,
+        { expiresIn: 3600 },
+        (err, token) => {
+          res.json({
+            loginSuccess: true,
+            userId: user._id,
+            token: 'Bearer ' + token,
+          });
+        }
+      );
     });
   });
 });
 
-router.get("/logout", auth, (req, res) => {
+router.get("/logout", passport.authenticate('jwt', { session: false }), (req, res) => {
   User.findOneAndUpdate(
     { _id: req.user._id },
     { token: "", tokenExp: "" },

@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const cors = require("cors");
-
+const passport = require('passport');
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
@@ -20,6 +20,12 @@ const connect = mongoose
   .catch((err) => console.log(err));
 
 app.use(cors());
+
+// Passport middleware
+app.use(passport.initialize());
+
+// Passport Config
+require('./config/passport')(passport);
 
 //to not get any deprecation warning or error
 //support parsing of application/x-www-form-urlencoded post data

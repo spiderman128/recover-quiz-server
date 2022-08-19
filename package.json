@@ -28,6 +28,8 @@
     "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "mongoose": "^5.4.20",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0",
     "saslprep": "^1.0.3",
     "supports-color": "^7.1.0"
   },

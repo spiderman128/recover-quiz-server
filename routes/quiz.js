@@ -1,16 +1,17 @@
 const express = require("express");
 const router = express.Router();
+const passport = require('passport');
+const _ = require("lodash");
+const sgMail = require("@sendgrid/mail");
+
 const Log = require("../models/Log");
 const Subject = require("../models/Subject");
 const User = require("../models/User");
 const Question = require("../models/Question");
-const _ = require("lodash");
-const sgMail = require("@sendgrid/mail");
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const { auth } = require("../middleware/auth");
-
-router.get("/", auth, async (req, res) => {
+router.get("/", passport.authenticate('jwt', { session: false }), async (req, res) => {
   const questions = await Question.find(
     { isDeleted: false },
     "subject text"
@@ -18,14 +19,14 @@ router.get("/", auth, async (req, res) => {
   res.status(200).json(questions);
 });
 
-router.get("/logs", auth, async (req, res) => {
+router.get("/logs", passport.authenticate('jwt', { session: false }), async (req, res) => {
   const logs = await Log.find({}, "user mark date")
     .populate("user", "name lastname email phonenumber")
     .sort("-date");
   res.status(200).json(logs);
 });
 
-router.post("/mark", auth, async (req, res) => {
+router.post("/mark", passport.authenticate('jwt', { session: false }), async (req, res) => {
   const answers = req.body;
 
   let subjects = await Subject.find({ isDeleted: false });

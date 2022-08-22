@@ -90,11 +90,11 @@ router.post("/mark", passport.authenticate('jwt', { session: false }), async (re
   const msg = {
     to: oldAdmin.email, // Change to your recipient
     from: "support@geniusrei.eu", // Change to your verified sender
-    subject: "Recovery Quiz Result",
+    subject: "Test compilato da " + req.user.name + " " + req.user.lastname,
     html: `<div>
-      <h4> Name: &nbsp;&nbsp;&nbsp;${req.user.name} ${req.user.lastname} </h4>  
+      <h4> Nome: &nbsp;&nbsp;&nbsp;${req.user.name}  </h4>  
       <h4> Email: &nbsp;&nbsp;&nbsp;${req.user.email} </h4>
-      <h4> Score: &nbsp;&nbsp;&nbsp;${mark} </h4>
+      <h4> Punteggio: &nbsp;&nbsp;&nbsp;${mark} </h4>
       ${emailString}
     </div>`,
   };
